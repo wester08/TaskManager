@@ -10,6 +10,7 @@ namespace TaskManager.Application.DTOs.Task
         public string Status { get; set; }
         public string AditionalData { get; set; }
         public bool Active { get; set; }
+        public int DaysLeft { get; set; }
 
     }
 }

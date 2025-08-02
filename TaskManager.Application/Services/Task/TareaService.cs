@@ -17,8 +17,8 @@ namespace TaskManager.Application.Services.Task
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
 
-        public TareaService(ITareaRepository tareaRepository, 
-                            ILogger<TareaService> logger, 
+        public TareaService(ITareaRepository tareaRepository,
+                            ILogger<TareaService> logger,
                             IConfiguration configuration)
         {
             _tareaRepository = tareaRepository;
@@ -26,6 +26,23 @@ namespace TaskManager.Application.Services.Task
             _configuration = configuration;
         }
 
+        //Func para calculos derivados.
+        Func<Tarea, int> calculateDaysLeft = task
+             =>
+        {
+            var DueDateTime = task.DueDate.ToDateTime(TimeOnly.MinValue);
+            var days = (DueDateTime - DateTime.Now).Days;
+
+            if (task.Status == "Completado" || days < 0)
+            {
+                return 0;
+            }
+            else
+            {
+
+            }
+            return days;
+        };
         public async Task<OperationResult> GetAllTareaAsync()
         {
             OperationResult operationResult = new OperationResult();
@@ -35,15 +52,27 @@ namespace TaskManager.Application.Services.Task
                 _logger.LogInformation("Retrieving all tareas from the repository");
                 var result = await _tareaRepository.GetAllAsync(d => d.Active);
 
-                if (result.IsSuccess && result.Data is not null) 
+                if (result.IsSuccess && result.Data is not null)
+                {
+                    var dto = ((List<Tarea>)result.Data).Select(t => new TareaDto
                     {
-                    var tareas = ((List<Tarea>)result.Data).ToList();
+                        Id = t.Id,
+                        Description = t.Description,
+                        DueDate = t.DueDate,
+                        Status = t.Status,
+                        AditionalData = t.AditionalData,
+                        Active = t.Active,
+                        DaysLeft = calculateDaysLeft(t)
+                    });
+
+
+                    var tareas = dto.ToList();
 
                     _logger.LogInformation("Task retrieved successfully.");
                     operationResult = OperationResult.Success("Tareas retrived successfully", tareas);
 
 
-                    }
+                }
                 else
                 {
                     _logger.LogWarning("No task found.");
@@ -57,7 +86,7 @@ namespace TaskManager.Application.Services.Task
             {
                 _logger.LogError($" Error retrieving all task: {ex.Message}", ex);
                 operationResult = OperationResult.Failure("An error ocurred while retrieving task");
-                
+
             }
             return operationResult;
         }
@@ -72,9 +101,23 @@ namespace TaskManager.Application.Services.Task
                 var result = await _tareaRepository.GetByIdAsync(id);
                 if (result.IsSuccess && result.Data is not null)
                 {
-                    var tareas = result.Data as Tarea;
+                    var dto = new TareaDto
+                    {
+                        Id = result.Data.Id,
+                        Description = result.Data.Description,
+                        DueDate = result.Data.DueDate,
+                        Status = result.Data.Status,
+                        AditionalData = result.Data.AditionalData,
+                        Active = result.Data.Active,
+                        DaysLeft = calculateDaysLeft(result.Data)
+                    };
 
-                    operationResult = OperationResult.Success("task retrived successfully", tareas);
+
+                    var tareas = dto;
+
+                    _logger.LogInformation("Task retrieved successfully.");
+                    operationResult = OperationResult.Success("Tareas retrived successfully", tareas);
+
 
 
                 }
@@ -102,17 +145,17 @@ namespace TaskManager.Application.Services.Task
             try
             {
                 _logger.LogInformation($"Adding task with description: {tareaAddDto.Description}");
-                if( tareaAddDto == null)
+                if (tareaAddDto == null)
                 {
-           
+
                     operationResult = OperationResult.Failure("tareaAddDto is null");
                     return operationResult;
                 }
 
                 operationResult = await _tareaRepository.AddAsync(tareaAddDto.ToDomainEntityAdd());
 
-            _logger.LogInformation("Successfully added a new Task");
-        }
+                _logger.LogInformation("Successfully added a new Task");
+            }
 
             catch (Exception ex)
             {
@@ -193,7 +236,19 @@ namespace TaskManager.Application.Services.Task
                 var result = await _tareaRepository.GetByAsync(s => s.Status, status);
                 if (result.IsSuccess && result.Data is not null)
                 {
-                    var tareas = ((List<Tarea>)result.Data).ToList();
+                    var dto = ((List<Tarea>)result.Data).Select(t => new TareaDto
+                    {
+                        Id = t.Id,
+                        Description = t.Description,
+                        DueDate = t.DueDate,
+                        Status = t.Status,
+                        AditionalData = t.AditionalData,
+                        Active = t.Active,
+                        DaysLeft = calculateDaysLeft(t)
+                    });
+
+
+                    var tareas = dto.ToList();
 
                     operationResult = OperationResult.Success("tasks retrived successfully", tareas);
 
@@ -226,7 +281,19 @@ namespace TaskManager.Application.Services.Task
                 var result = await _tareaRepository.GetByAsync(s => s.DueDate, date);
                 if (result.IsSuccess && result.Data is not null)
                 {
-                    var tareas = ((List<Tarea>)result.Data).ToList();
+                    var dto = ((List<Tarea>)result.Data).Select(t => new TareaDto
+                    {
+                        Id = t.Id,
+                        Description = t.Description,
+                        DueDate = t.DueDate,
+                        Status = t.Status,
+                        AditionalData = t.AditionalData,
+                        Active = t.Active,
+                        DaysLeft = calculateDaysLeft(t)
+                    });
+
+
+                    var tareas = dto.ToList();
 
                     operationResult = OperationResult.Success("tasks retrived successfully", tareas);
 

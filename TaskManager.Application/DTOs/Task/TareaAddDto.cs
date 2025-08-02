@@ -8,6 +8,7 @@ namespace TaskManager.Application.DTOs.Task
         public string Status { get; init; }
         public string AditionalData { get; init; }
         public bool Active  { get; init; }
+        public int DaysLeft { get; init; }
 
     }
 }

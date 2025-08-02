@@ -1,11 +1,8 @@
-
-
 using TaskManager.Application.Interfaces.Respositories;
 using TaskManager.Domain.Base;
 using TaskManager.Persistence.Context;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskManager.Persistence.Base
 {
@@ -25,7 +22,7 @@ namespace TaskManager.Persistence.Base
         {
             OperationResult Opresult = new OperationResult();
 
-            try
+            try 
             {
                 var entities = await _dbSet.Where(filter).ToListAsync();
                 Opresult = OperationResult.Success($"Entity {typeof(TEntity)} retrieved successfully", entities);
@@ -126,6 +123,10 @@ namespace TaskManager.Persistence.Base
         {
             OperationResult Opresult = new OperationResult();
 
+            //Action Task Delete
+            Action<int> notifyDelete = task =>
+                Console.WriteLine($"Task Deleted with id {id}");
+
             try
             {
 
@@ -141,9 +142,16 @@ namespace TaskManager.Persistence.Base
             {
                 Opresult = OperationResult.Failure($"Error removed entity{typeof(TEntity)} : {ex.Message}");
             }
+
+            if (Opresult.IsSuccess)
+            {
+                notifyDelete(id);
+            }
             return Opresult;
         }
 
+
+        //Filtros.
         public virtual async Task<OperationResult> GetByAsync<Tparameter>(Expression<Func<TEntity, Tparameter>> parameterSelector, Tparameter value)
         {
             OperationResult operationResult = new OperationResult();

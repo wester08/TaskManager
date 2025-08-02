@@ -16,7 +16,7 @@ namespace TaskManager.Application.Extentions.Task
                 DueDate = tareaAddDto.DueDate,
                 Status = tareaAddDto.Status,
                 AditionalData = tareaAddDto.AditionalData,
-                Active = tareaAddDto.Active
+                Active = tareaAddDto.Active,
             };
         }
         public static Tarea ToDomainEntityUpdate(this TareaUpdateDto tareaUpdateDto)
