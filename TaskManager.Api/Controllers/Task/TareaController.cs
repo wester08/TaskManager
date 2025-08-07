@@ -93,6 +93,34 @@ namespace TaskManager.Api.Controllers.Task
 
         }
 
+        // POST api/<TareaController>
+        [HttpPost("AddTaskHighTaskPriority")]
+        public async Task<IActionResult> PostHighPriority([FromBody] string description)
+        {
+            try
+            {
+                var result = await _tareaService.CreateTaskHighPriority(description);
+
+                if (!result.IsSuccess)
+                {
+                    return BadRequest(result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, new
+                {
+                    Message = "An unexpected error has ocurred",
+                    Details = ex.Message
+                });
+            }
+
+        }
+
+
         // PUT api/<TareaController>/5
         [HttpPut("UpdateCategoriaById/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] TareaUpdateDto tareaUpdateDto)

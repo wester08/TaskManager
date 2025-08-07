@@ -13,7 +13,7 @@ namespace TaskManager.Domain.Entities
         public string Description { get; set; }
         public DateOnly DueDate { get; set; } 
         public string Status {  get; set; }
-        public string AditionalData { get; set; }
+        public  string AditionalData { get; set; }
         public bool Active { get; set; }
 
 

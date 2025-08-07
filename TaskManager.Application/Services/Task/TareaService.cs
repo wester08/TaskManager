@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TaskManager.Application.DTOs.Task;
 using TaskManager.Application.Extentions.Task;
+using TaskManager.Application.Interfaces.Factories;
 using TaskManager.Application.Interfaces.Respositories.Task;
 using TaskManager.Application.Interfaces.Services;
 using TaskManager.Domain.Base;
@@ -16,14 +17,17 @@ namespace TaskManager.Application.Services.Task
         private readonly ITareaRepository _tareaRepository;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly ITareaFactory _tareaFactory;
 
         public TareaService(ITareaRepository tareaRepository,
                             ILogger<TareaService> logger,
-                            IConfiguration configuration)
+                            IConfiguration configuration,
+                            ITareaFactory tareaFactory)
         {
             _tareaRepository = tareaRepository;
             _logger = logger;
             _configuration = configuration;
+            _tareaFactory = tareaFactory;
         }
 
         //Func para calculos derivados.
@@ -166,6 +170,36 @@ namespace TaskManager.Application.Services.Task
             return operationResult;
         }
 
+        public async Task<OperationResult> CreateTaskHighPriority(string description)
+        {
+            OperationResult operationResult = new OperationResult();
+            try
+            {
+                _logger.LogInformation($"Adding task with description: {description}");
+
+                if (description == null)
+                {
+                    operationResult = OperationResult.Failure("Description is null");
+
+                    //return operationResult;
+
+                }
+
+                var tarea = _tareaFactory.CreateTaskHighPriority(description);
+
+                operationResult = await _tareaRepository.AddAsync(tarea);
+
+                _logger.LogInformation("Successfully added a new Task");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error adding a new task: {ex.Message}", ex);
+                operationResult = OperationResult.Failure("An error occurred while adding task.");
+
+            }
+
+            return operationResult;
+        }
         public async Task<OperationResult> UpdateTareaAsync(TareaUpdateDto tareaUpdateDto)
         {
             OperationResult operationResult = new OperationResult();

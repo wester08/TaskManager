@@ -17,6 +17,8 @@ namespace TaskManager.Application.Interfaces.Services
 
         Task<OperationResult> FindByDueDateAsync(DateOnly date);
 
+        Task<OperationResult> CreateTaskHighPriority(string description);
+
 
     }
 }

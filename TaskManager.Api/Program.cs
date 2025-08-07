@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Api.MiddLewares;
+using TaskManager.Application.Interfaces.Factories;
 using TaskManager.Application.Interfaces.Respositories.Task;
 using TaskManager.Application.Interfaces.Services;
 using TaskManager.Application.Services.Task;
@@ -21,6 +22,7 @@ namespace TaskManager.Api
 
             builder.Services.AddScoped<ITareaRepository, TareaRepository>();
             builder.Services.AddTransient<ITareaService, TareaService>();
+            builder.Services.AddScoped<ITareaFactory, TareaFactory>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
