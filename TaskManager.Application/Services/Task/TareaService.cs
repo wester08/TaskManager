@@ -143,29 +143,70 @@ namespace TaskManager.Application.Services.Task
 
         }
 
-        public async Task<OperationResult> CreateTareaAsync(TareaAddDto tareaAddDto)
+        public async Task<OperationResult> CreateTareaAsync(IEnumerable<TareaAddDto> tareaAddDto)
         {
             OperationResult operationResult = new OperationResult();
             try
             {
-                _logger.LogInformation($"Adding task with description: {tareaAddDto.Description}");
                 if (tareaAddDto == null)
                 {
-
-                    operationResult = OperationResult.Failure("tareaAddDto is null");
-                    return operationResult;
+                    return operationResult = OperationResult.Failure("tareaAddDto is null");
+                    
+                   
                 }
 
-                operationResult = await _tareaRepository.AddAsync(tareaAddDto.ToDomainEntityAdd());
+                var taskList = tareaAddDto.ToList();
+                _logger.LogInformation($"processing tasks: {taskList.Count}");
 
-                _logger.LogInformation("Successfully added a new Task");
+                var tareasCreadas = new List<TareaAddDto>();
+                var tareasFallidas = new List<TareaAddDto>();
+                //PROCESAMIENTO DE TAREAS EN COLA.
+                var tareasQueue = new Queue<Tarea>(taskList.Select(dto => dto.ToDomainEntityAdd()));
+
+                while (tareasQueue.Count > 0)
+                {
+                    var tareas = tareasQueue.Dequeue();
+
+                    var result = await _tareaRepository.AddAsync(tareas); 
+
+                    if (result.IsSuccess)
+                    {
+                        _logger.LogInformation($"Task with description '{tareas.Description}' added successfully.");
+                        tareasCreadas.Add(result.Data);
+
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Failed to add task with description '{tareas.Description}': {result.Message}");
+                        tareasFallidas.Add(result.Data);
+
+                    }
+                }
+
+                if(tareasCreadas.Any())
+                {
+                    var mensaje = tareasFallidas.Any()
+                        ? $"Some tasks were added successfully ({tareasCreadas.Count}), but some failed ({tareasFallidas.Count})."
+                        : "All tasks added successfully.";
+
+                    operationResult = OperationResult.Success(mensaje, new
+                    {
+                        Created = tareasCreadas,
+                        Failed = tareasFallidas
+                    });
+                }
+                else
+                {
+                    operationResult = OperationResult.Failure("No tasks were added successfully.", tareasFallidas);
+                }
+
+
+                    _logger.LogInformation("Successfully added new Tasks");
             }
-
             catch (Exception ex)
             {
                 _logger.LogError($"Error adding a new task: {ex.Message}", ex);
                 operationResult = OperationResult.Failure("An error occurred while adding task.");
-
             }
             return operationResult;
         }

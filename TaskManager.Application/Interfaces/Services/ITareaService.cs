@@ -10,7 +10,7 @@ namespace TaskManager.Application.Interfaces.Services
     {
         Task<OperationResult> GetAllTareaAsync();
         Task<OperationResult> GetTareaByIdAsync(int id);
-        Task<OperationResult> CreateTareaAsync(TareaAddDto tareaAddDto);
+        Task<OperationResult> CreateTareaAsync(IEnumerable<TareaAddDto> tareaAddDto);
         Task<OperationResult> UpdateTareaAsync(TareaUpdateDto tareaUpdateDto);
         Task<OperationResult> DeleteTareaAsync(int id);
         Task<OperationResult> FindByStatusAsync(string status);

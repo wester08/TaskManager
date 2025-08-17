@@ -67,11 +67,16 @@ namespace TaskManager.Api.Controllers.Task
         }
 
         // POST api/<TareaController>
+        //recibir un arreglo en el cuerpo
         [HttpPost("AddTask")]
-        public async Task<IActionResult> Post([FromBody] TareaAddDto tareaAddDto)
+        public async Task<IActionResult> Post([FromBody] TareaAddDto[] tareaAddDto)
         {
             try
             {
+                // Replace this line in the Post method:
+                // var result = await _tareaService.CreateTareaAsync(tareaAddDto);
+
+                // With the following line:
                 var result = await _tareaService.CreateTareaAsync(tareaAddDto);
 
                 if (!result.IsSuccess)

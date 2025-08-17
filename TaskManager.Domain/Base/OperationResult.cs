@@ -19,7 +19,7 @@ namespace TaskManager.Domain.Base
         public static OperationResult Success(string message, dynamic? data = null) {
             return new OperationResult(true, message, data);
         }
-        public static OperationResult Failure(string message) {
+        public static OperationResult Failure(string message, dynamic? data = null) {
             return new OperationResult(false, message);
         }
 
