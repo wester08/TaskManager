@@ -171,6 +171,7 @@ namespace TaskManager.Application.Services.Task
 
                     if (result.IsSuccess)
                     {
+                        Memoization.ClearAll();
                         _logger.LogInformation($"Task with description '{tareas.Description}' added successfully.");
                         tareasCreadas.Add(result.Data);
 
@@ -256,6 +257,8 @@ namespace TaskManager.Application.Services.Task
 
                 operationResult = await _tareaRepository.UpdateAsync(tareaUpdateDto.ToDomainEntityUpdate());
 
+                Memoization.ClearAll();
+
                 _logger.LogInformation("Successfully updated task.");
             }
             catch (Exception ex)
@@ -277,6 +280,8 @@ namespace TaskManager.Application.Services.Task
                 var result = await _tareaRepository.DeleteAsync(id);
                 if (result.IsSuccess && result.Data is not null)
                 {
+
+                    Memoization.ClearAll();
                     var tareas = result.Data as Tarea;
 
                     operationResult = OperationResult.Success("Task removed successfully", tareas);
@@ -308,33 +313,37 @@ namespace TaskManager.Application.Services.Task
             try
             {
                 _logger.LogInformation($"Retrieving task with Status: {status}");
-                var result = await _tareaRepository.GetByAsync(s => s.Status, status);
-                if (result.IsSuccess && result.Data is not null)
+
+                string cacheKey = $"status_{status.ToLower()}";
+
+                var tareas = Memoization.GetOrAdd(cacheKey, () =>
                 {
-                    var dto = ((List<Tarea>)result.Data).Select(t => new TareaDto
+                    var result = _tareaRepository.GetByAsync(s => s.Status, status).Result;
+
+                    if (result.IsSuccess && result.Data is not null)
                     {
-                        Id = t.Id,
-                        Description = t.Description,
-                        DueDate = t.DueDate,
-                        Status = t.Status,
-                        AditionalData = t.AditionalData,
-                        Active = t.Active,
-                        DaysLeft = calculateDaysLeft(t)
-                    });
+                        return ((List<Tarea>)result.Data).Select(t => new TareaDto
+                        {
+                            Id = t.Id,
+                            Description = t.Description,
+                            DueDate = t.DueDate,
+                            Status = t.Status,
+                            AditionalData = t.AditionalData,
+                            Active = t.Active,
+                            DaysLeft = calculateDaysLeft(t)
+                        }).ToList();
+                    }
+                    return new List<TareaDto>();
+                });
 
-
-                    var tareas = dto.ToList();
-
+                if (tareas.Any())
+                {
                     operationResult = OperationResult.Success("tasks retrived successfully", tareas);
-
-
                 }
                 else
                 {
                     operationResult = OperationResult.Failure("No Tasks found");
-
                 }
-                _logger.LogInformation("Successfully retrieved tasks");
 
             }
             catch (Exception ex)
@@ -353,33 +362,69 @@ namespace TaskManager.Application.Services.Task
             try
             {
                 _logger.LogInformation($"Retrieving task with date: {date}");
-                var result = await _tareaRepository.GetByAsync(s => s.DueDate, date);
-                if (result.IsSuccess && result.Data is not null)
+
+                string cacheKey = $"duedate_{date.ToString("yyyyMMdd")}";
+
+                var tareas = Memoization.GetOrAdd(cacheKey, () =>
                 {
-                    var dto = ((List<Tarea>)result.Data).Select(t => new TareaDto
+                    var result = _tareaRepository.GetByAsync(s => s.DueDate, date).Result;
+
+                    if (result.IsSuccess && result.Data is not null)
                     {
-                        Id = t.Id,
-                        Description = t.Description,
-                        DueDate = t.DueDate,
-                        Status = t.Status,
-                        AditionalData = t.AditionalData,
-                        Active = t.Active,
-                        DaysLeft = calculateDaysLeft(t)
-                    });
+                        return ((List<Tarea>)result.Data).Select(t => new TareaDto
+                        {
+                            Id = t.Id,
+                            Description = t.Description,
+                            DueDate = t.DueDate,
+                            Status = t.Status,
+                            AditionalData = t.AditionalData,
+                            Active = t.Active,
+                            DaysLeft = calculateDaysLeft(t)
+                        }).ToList();
+                    }
+                    return new List<TareaDto>();
+                });
 
-
-                    var tareas = dto.ToList();
-
-                    operationResult = OperationResult.Success("tasks retrived successfully", tareas);
-
-
+                if (tareas.Any())
+                {
+                    operationResult = OperationResult.Success("Tasks retrieved successfully (from cache if repeated)", tareas);
                 }
                 else
                 {
                     operationResult = OperationResult.Failure("No Tasks found");
-
                 }
-                _logger.LogInformation("Successfully retrieved tasks");
+            
+
+
+
+                //var result = await _tareaRepository.GetByAsync(s => s.DueDate, date);
+
+            //if (result.IsSuccess && result.Data is not null)
+            //{
+            //    var dto = ((List<Tarea>)result.Data).Select(t => new TareaDto
+            //    {
+            //        Id = t.Id,
+            //        Description = t.Description,
+            //        DueDate = t.DueDate,
+            //        Status = t.Status,
+            //        AditionalData = t.AditionalData,
+            //        Active = t.Active,
+            //        DaysLeft = calculateDaysLeft(t)
+            //    });
+
+
+            //    var tareas = dto.ToList();
+
+            //    operationResult = OperationResult.Success("tasks retrived successfully", tareas);
+
+
+            //}
+            //else
+            //{
+            //    operationResult = OperationResult.Failure("No Tasks found");
+
+            //}
+            //_logger.LogInformation("Successfully retrieved tasks");
 
             }
             catch (Exception ex)
