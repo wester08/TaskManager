@@ -182,6 +182,52 @@ namespace TaskManager.Persistence.Base
             }
             return operationResult;
         }
+
+        public virtual async Task<OperationResult> GetByNameAsync(string name)
+        {
+            OperationResult Opresult = new OperationResult();
+            try
+            {
+                var entity = await _dbSet.Where(e => EF.Property<string>(e, "UserName").ToLower().Contains(name.ToLower())).ToListAsync();
+                if (entity == null)
+                {
+                    Opresult = OperationResult.Failure($"Entity {typeof(TEntity)} with Name {name} not found.");
+                    return Opresult;
+                }
+                Opresult = OperationResult.Success($"Entity {typeof(TEntity)} retrieved successfully", entity);
+            }
+            catch (Exception ex)
+            {
+                Opresult = OperationResult.Failure($"Error retrieving entities{typeof(TEntity)} : {ex.Message}");
+            }
+            return Opresult;
+        }
+        public virtual async Task<OperationResult> GetByEmailAsync(string email)
+        {
+            OperationResult Opresult = new OperationResult();
+
+            try
+            {
+                var entity = await _dbSet.FirstOrDefaultAsync(e =>
+                    EF.Property<string>(e, "Email") == email &&
+                    EF.Property<bool>(e, "Active") == true
+                );
+
+                if (entity == null)
+                {
+                    Opresult = OperationResult.Failure($"Entity {typeof(TEntity).Name} with email '{email}' not found or inactive.");
+                    return Opresult;
+                }
+
+                Opresult = OperationResult.Success($"Entity {typeof(TEntity).Name} retrieved successfully.", entity);
+            }
+            catch (Exception ex)
+            {
+                Opresult = OperationResult.Failure($"Error retrieving entity {typeof(TEntity).Name}: {ex.Message}");
+            }
+
+            return Opresult;
+        }
     }
 }
 

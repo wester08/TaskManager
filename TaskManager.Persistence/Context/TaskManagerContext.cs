@@ -18,6 +18,7 @@ namespace TaskManager.Persistence.Context
         }
   
         public DbSet<Tarea> Tareas { get; set; }
+        public DbSet<User> Users { get; set; }
 
     }
 

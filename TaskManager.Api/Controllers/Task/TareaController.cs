@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TaskManager.Application.DTOs.Task;
 using TaskManager.Application.Interfaces.Services;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TaskManager.Api.Controllers.Task
 {
@@ -19,6 +19,7 @@ namespace TaskManager.Api.Controllers.Task
 
         // GET: api/<TareaController>
         [HttpGet("GetAllTask")]
+        [Authorize]
         public async Task<IActionResult> Get()
         {
             try
@@ -45,6 +46,7 @@ namespace TaskManager.Api.Controllers.Task
 
         // GET api/<TareaController>/5
         [HttpGet("GetTaskById/{id}")]
+        [Authorize]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -67,16 +69,13 @@ namespace TaskManager.Api.Controllers.Task
         }
 
         // POST api/<TareaController>
-        //recibir un arreglo en el cuerpo
         [HttpPost("AddTask")]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] TareaAddDto[] tareaAddDto)
         {
             try
             {
-                // Replace this line in the Post method:
-                // var result = await _tareaService.CreateTareaAsync(tareaAddDto);
 
-                // With the following line:
                 var result = await _tareaService.CreateTareaAsync(tareaAddDto);
 
                 if (!result.IsSuccess)
@@ -100,6 +99,7 @@ namespace TaskManager.Api.Controllers.Task
 
         // POST api/<TareaController>
         [HttpPost("AddTaskHighTaskPriority")]
+        [Authorize]
         public async Task<IActionResult> PostHighPriority([FromBody] string description)
         {
             try
@@ -128,6 +128,7 @@ namespace TaskManager.Api.Controllers.Task
 
         // PUT api/<TareaController>/5
         [HttpPut("UpdateCategoriaById/{id}")]
+        [Authorize]
         public async Task<IActionResult> Put(int id, [FromBody] TareaUpdateDto tareaUpdateDto)
         {
             try
@@ -156,6 +157,7 @@ namespace TaskManager.Api.Controllers.Task
         // DELETE api/<TareaController>/5
 
         [HttpDelete("DeleteTaskById/{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -183,6 +185,7 @@ namespace TaskManager.Api.Controllers.Task
         // GETBYDATE api/<TareaController>/2025-07-22
 
         [HttpGet("FindByDueDate/{date}")]
+        [Authorize]
         public async Task<IActionResult> FindByDueDate(DateOnly date)
         {
             try
@@ -209,6 +212,7 @@ namespace TaskManager.Api.Controllers.Task
         // GETSTATUS api/<TareaController>/Pendiente
 
         [HttpGet("FindByStatus/{status}")]
+        [Authorize]
         public async Task<IActionResult> FindByStatus(string status)
         {
             try
@@ -229,13 +233,6 @@ namespace TaskManager.Api.Controllers.Task
                 });
             }
         }
-
-        //[HttpGet("test-error")]
-        //public async Task<IActionResult> TestError()
-        //{
-        //    throw new InvalidOperationException("Exception of test");
-        //}
-
 
     }
 }

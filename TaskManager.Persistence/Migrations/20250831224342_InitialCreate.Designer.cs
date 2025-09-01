@@ -12,8 +12,8 @@ using TaskManager.Persistence.Context;
 namespace TaskManager.Persistence.Migrations
 {
     [DbContext(typeof(TaskManagerContext))]
-    [Migration("20250723151411_campoadate")]
-    partial class campoadate
+    [Migration("20250831224342_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,47 @@ namespace TaskManager.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tarea", "TaskManager");
+                });
+
+            modelBuilder.Entity("TaskManager.Domain.Entities.User", b =>
+                {
+                    b.Property<int>("IdUser")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUser"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RolId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserCreateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserUpdateId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdUser");
+
+                    b.ToTable("Users", "Security");
                 });
 #pragma warning restore 612, 618
         }

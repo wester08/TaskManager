@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Security", "TaskManager.Security\TaskManager.Security.csproj", "{ABD0BD83-ED8E-4601-98D0-1F9A0781C4E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{DD25CA78-0D3F-4D0A-ABAC-604353F8874D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD25CA78-0D3F-4D0A-ABAC-604353F8874D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD25CA78-0D3F-4D0A-ABAC-604353F8874D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABD0BD83-ED8E-4601-98D0-1F9A0781C4E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABD0BD83-ED8E-4601-98D0-1F9A0781C4E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABD0BD83-ED8E-4601-98D0-1F9A0781C4E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABD0BD83-ED8E-4601-98D0-1F9A0781C4E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +58,7 @@ Global
 		{D3CCE09E-861D-4E3B-8EDC-615BBCD640A8} = {F0826265-4F1B-4DC7-AA69-C49E0CA68A1F}
 		{A17FB450-EE10-4A78-8C97-B2157B2726AB} = {F0826265-4F1B-4DC7-AA69-C49E0CA68A1F}
 		{DD25CA78-0D3F-4D0A-ABAC-604353F8874D} = {E3CB6D5C-F2B3-4FF1-ABFC-05B115270B60}
+		{ABD0BD83-ED8E-4601-98D0-1F9A0781C4E5} = {E3CB6D5C-F2B3-4FF1-ABFC-05B115270B60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4DEAC34-E33A-4C26-9F9D-BDF10E899EC7}

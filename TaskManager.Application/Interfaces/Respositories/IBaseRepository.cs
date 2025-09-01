@@ -8,6 +8,9 @@ namespace TaskManager.Application.Interfaces.Respositories
     {
         Task<OperationResult> GetAllAsync(Expression<Func<TEntity, bool>> filter);
         Task<OperationResult> GetByIdAsync(int id);
+        Task<OperationResult> GetByNameAsync(string name);
+
+        Task<OperationResult> GetByEmailAsync(string email);
         Task<OperationResult> GetByAsync<Tparameter>(Expression<Func<TEntity, Tparameter>> parameterSelector, Tparameter value);
         Task<OperationResult> AddAsync(TEntity entity);
         Task<OperationResult> UpdateAsync(TEntity entity);
