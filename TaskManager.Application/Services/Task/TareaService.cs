@@ -18,16 +18,19 @@ namespace TaskManager.Application.Services.Task
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly ITareaFactory _tareaFactory;
+        private readonly ITareaNotifier _tareaNotifier;
 
         public TareaService(ITareaRepository tareaRepository,
                             ILogger<TareaService> logger,
                             IConfiguration configuration,
-                            ITareaFactory tareaFactory)
+                            ITareaFactory tareaFactory,
+                            ITareaNotifier tareaNotifier)
         {
             _tareaRepository = tareaRepository;
             _logger = logger;
             _configuration = configuration;
             _tareaFactory = tareaFactory;
+            _tareaNotifier = tareaNotifier;
         }
 
         //Func para calculos derivados.
@@ -186,6 +189,8 @@ namespace TaskManager.Application.Services.Task
 
                 if(tareasCreadas.Any())
                 {
+                    await _tareaNotifier.NotifyTaskCreatedAsync(tareasCreadas);
+
                     var mensaje = tareasFallidas.Any()
                         ? $"Some tasks were added successfully ({tareasCreadas.Count}), but some failed ({tareasFallidas.Count})."
                         : "All tasks added successfully.";
@@ -193,7 +198,9 @@ namespace TaskManager.Application.Services.Task
                     operationResult = OperationResult.Success(mensaje, new
                     {
                         Created = tareasCreadas,
-                        Failed = tareasFallidas
+                        Failed = tareasFallidas,
+                        
+
                     });
                 }
                 else

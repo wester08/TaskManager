@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using TaskManager.Api.Hubs;
 using TaskManager.Api.MiddLewares;
+using TaskManager.Api.Notifications;
 using TaskManager.Application.Interfaces.Factories;
 using TaskManager.Application.Interfaces.Respositories.Security;
 using TaskManager.Application.Interfaces.Respositories.Task;
@@ -36,6 +38,8 @@ namespace TaskManager.Api
             builder.Services.AddScoped<ITareaRepository, TareaRepository>();
             builder.Services.AddTransient<ITareaService, TareaService>();
             builder.Services.AddScoped<ITareaFactory, TareaFactory>();
+            builder.Services.AddSignalR();
+            builder.Services.AddTransient<ITareaNotifier, SignalRTareaNotifier>();
 
 
 
@@ -143,6 +147,8 @@ namespace TaskManager.Api
             app.UseAuthorization();
             app.UseMiddleware<ExceptionMiddLeware>();
             app.MapControllers();
+
+            app.MapHub<NotificationHub>("/receiveNotification");
 
             app.Run();
         }
